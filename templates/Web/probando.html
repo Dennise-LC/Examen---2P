@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/estilo.css' %}">
+    <link href="{% static 'css/Grafo.css' %}" rel="stylesheet" />
+    <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+
+    <!--polyfills are needed for this extension for old browsers like IE -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/core-js/2.5.7/shim.min.js"></script>
+
+    <script src="https://unpkg.com/layout-base/layout-base.js"></script>
+    <script src="https://unpkg.com/avsdf-base/avsdf-base.js"></script>
+    <script src="{% static 'Js/cytoscape-avsdf.js' %}"></script>
+
+    <script>
+
+        let a = "{{Nodos|safe}}";
+        let b = "{{Conexion|safe}}";
+
+        console.log(b);
+
+        a = a.split(',');
+        b = b.split(',');
+
+
+        function Grafo() {
+
+            var cy = window.cy = cytoscape({
+
+                container: document.getElementById('cy'),
+
+                layout: {
+                    name: 'avsdf',
+                    nodeSeparation: 120
+                },
+
+                style: [
+                    {
+                        selector: 'node[name]',
+                        style: {
+                            'content': 'data(name)',
+                            'text-valign': 'left',
+                            'color': '#000000',
+                            'background-color': '#3a7ecf'
+                        }
+                    },
+
+                    {
+                        selector: 'edge',
+                        style: {
+                            'width': 3,
+                            'line-color': 'black',
+                            'opacity': 1,
+                            'curve-style': 'bezier',
+                            'target-arrow-shape': 'triangle',
+                        }
+                    }
+                ],
+            });
+
+            for (let c = 0; c < a.length; c++) {
+                var eles = cy.add([
+                    { group: 'nodes', data: { id: 'v' + a[c], weight: c, name: 'R' + a[c] } }
+                ]);
+            }
+
+
+            for (let c = 0; c < b.length; c++) {
+                if (c + 1 < b.length) {
+                    var eles = cy.add([
+                        { group: 'edges', data: { source: 'v' + b[c], target: 'v' + b[c + 1], directed: 'false' } }
+                    ]);
+                    c++;
+                }
+
+            }
+
+
+            var layout = cy.layout({
+                name: 'avsdf',
+                refresh: 1,
+                animate: "end",
+                animationDuration: 1000,
+                animationEasing: 'ease-in-out',
+                nodeSeparation: 120
+            });
+
+            layout.run();
+
+        }
+    </script>
+    
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="fondos">
+        <div class="container">
+            <div class="d-flex flex-row" id="titulo">
+                <h2>
+                    <!-- Imagen de logo -->
+                    <img src="{% static 'Imagenes/logo-Circulo.png' %}" alt="" width="50" height="50"
+                        class="d-inline-block align-text-top">
+                    EXAMEN |
+                </h2>
+                <span id="materia">RECONOCIMIENTO DE PATRONES SINTACTICO-ESTRUCTURAL</span>
+            </div>
+            <div class="d-flex flex-row">
+                <div class="d-flex flex-column col-sm-5" id="columna1">
+                    <div class="row">
+                        <div class="d-flex flex-column">
+                            <!-- Boton de generar umbral -->
+                            <form action="{% url 'Home:p3' %}" method="GET" class="input-group mb-3">
+                                {% csrf_token %}
+                                <span id="Text-Umbral" class="input-group-text" for="umbral">Ingrese el umbral</span>
+                                <input id="umbral" type="text" class="form-control" aria-label="Recipient's username"
+                                    name="umbral">
+                                <button id="Generar" class="btn" type="submit">Generar</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="d-flex flex-column">
+                            <!-- Scroll -->
+                            <div id="scroll">
+                                <!-- tabla de los datos -->
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">V1</th>
+                                            <th scope="col">V2</th>
+                                            <th scope="col">Distancia</th>
+                                            <th scope="col">Si / No</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for elemento in esta %}
+                                        <tr>
+                                            {% for x in elemento %}
+                                            <td style="text-align: center;">{{x}}</td>
+                                            {% endfor %}
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" id="botones">
+                        <!-- Boton mostrar grafo -->
+                        <div class="col d-inline-flex">
+                            <button type="button" id="MostrarGrafo" class="btn" onclick="Grafo()">Mostrar Grafo</button>
+                        </div>
+                        <!-- Boton Guardar datos -->
+                        <div class="col d-inline-flex">
+                            <a href="{% url 'Home:home' %}">
+                                <button type="button" id="GuardarDatos" class="btn" onclick="href">Modificar datos de entrada</button>
+                            </a>
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex flex-column col-sm-7" id="columna2">
+                    <div id="cy"></div>
+                </div>
+            </div>
+            <footer class="text-center text-muted">
+                <section class="d-flex justify-content-center justify-content-lg-between p-1 border-bottom" id="CopyRT">
+
+                    <div class="me-5 d-none d-lg-block">
+
+                    </div>
+
+                    <div>
+                        <button class="btn me-2 text-reset">
+                            <img src="{% static 'Imagenes/github.png' %}" alt="Github" height="30px">
+                            <span>Cristian</span>
+                        </button>
+                        <button class="btn me-2 text-reset">
+                            <img src="{% static 'Imagenes/github.png' %}" alt="Github" height="30px">
+                            <span>Laura</span>
+                        </button>
+                    </div>
+
+                </section>
+                <div class="text-center p-2" id="CopyR">
+                    UAEM | UNIVERSIDAD AUTONOMA DEL ESTADO DE MEXICO
+                    <a class="text-reset fw-bold"></a>
+                </div>
+            </footer>
+        </div>
+
+    </div>
+
+</body>
+</html>

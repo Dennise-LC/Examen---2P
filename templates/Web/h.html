@@ -1,0 +1,46 @@
+{% extends 'C:/Users/Chimp/Desktop/ProyectoEfren/Examen/GrafoExamen/templates/Web/Index.html' %}
+
+{% block contenido %}
+<div class="sp-content">
+    <div class="sp-globe"></div>
+    <h2 class="frame-1">BIENVENIDO</h2>
+    <h2 class="frame-2">AL MEJOR PROGRAMA</h2>
+    <h2 class="frame-3">ENTREGADO</h2>
+    <h2 class="frame-4">ESTE SEMESTRE</h2>
+    <h2 class="frame-5">
+        <span>RECONOCIMIENTO</span>
+        <span>DE PATRONES</span>
+        <span>SINTACTICO-ESTRUCTURAL</span>
+    </h2>
+    
+    <div class="row contenedor">
+        <form action="{% url 'Home:p2' %}" method="GET">
+
+            <div class="col">
+                <div class="text">
+                    <h6>Ingrese ...</h6>
+                </div>
+                <div class="input-group mb-3">
+                    <!-- Primera opcion -->
+                    <label class="input-group-text" id="A1" for="inputGroupSelect01">Cantidad de vectores</label>
+                    <select class="form-select" name="CV" id="CV">
+                        
+                        {% for x in D %}
+                        <option>{{x}}</option>
+                        {% endfor %}
+                            
+                    </select>
+                    <!-- Segunda opcion -->
+                    <label class="input-group-text" id="B2" for="inputGroupSelect01">Dimencion de los vectores</label>
+                    <select class="form-select" name="DV" id="DV">
+                        {% for x in D %}
+                        <option>{{x}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        <button class="sp-circle-link" type="submit">Continuar</button>
+        </form>
+</div>
+{% endblock contenido %}
